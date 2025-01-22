@@ -1,6 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { Modal } from "bootstrap";
 import Pagination from "../components/Pagination";
 import ProductModal from "../components/ProductModal";
 import DeleteProductModal from "../components/DeleteProductModal";
@@ -18,25 +17,24 @@ const defaultModalState = {
   description: "",
   content: "",
   is_enabled: 0,
-  imagesUrl: [""],
+  imagesUrl: [""]
 };
 
 function ProductPage({ setIsAuth }) {
-  const [products, setProducts] = useState([]);
-
-  const [modalMode, setModalMode] = useState(null); //判斷哪種modal
-
-  const [tempProduct, setTempProduct] = useState(defaultModalState);
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false); //預設【產品modal】狀態
-  const [isDelProductModalOpen, setIsDelProductModalOpen] = useState(false); //預設【刪除modal】狀態
+  const [products, setProducts] = useState([]); // 商品列表(狀態)
+  const [modalMode, setModalMode] = useState(null); // Modal判斷(新增或編輯)
+  const [tempProduct, setTempProduct] = useState(defaultModalState); // 暫存的商品資料
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false); // 【產品 Modal】狀態
+  const [isDelProductModalOpen, setIsDelProductModalOpen] = useState(false); // 【刪除Modal】狀態
+  
   // 取得商品列表(後台)--------------------------------------------------
   const getProducts = async (page = 1) => {
     try {
       const res = await axios.get(
         `${BASE_URL}/v2/api/${API_PATH}/admin/products?page=${page}`
       );
-      setProducts(res.data.products);
-      setPageInfo(res.data.pagination); //儲存頁面資訊(頁數)
+      setProducts(res.data.products);   // 更新商品列表
+      setPageInfo(res.data.pagination); //儲存頁數
     } catch (error) {
       alert("取得產品失敗");
     }
@@ -45,7 +43,7 @@ function ProductPage({ setIsAuth }) {
     getProducts();
   }, []);
 
-  // 判斷開啟modal【編輯產品】 or 【新增產品】------------------------------------------------------
+  // 判斷：開啟modal【編輯產品】 or 【新增產品】------------------------------------------------------
   const handleOpenProductModal = (mode, product) => {
     // 判斷是"編輯"還是"新增商品"的modal，並傳入input的值
     setModalMode(mode);
@@ -59,13 +57,15 @@ function ProductPage({ setIsAuth }) {
       default:
         break;
     }
-    setIsProductModalOpen(true);
+    setIsProductModalOpen(true); // 開啟產品 Modal
   };
-  // 開啟【刪除modal】
+  
+  // 開啟【刪除modal】--------------------------------------------------------
   const handleOpenDelProductModal = (product) => {
     setTempProduct(product); //為了顯示產品名稱，帶入data
-    setIsDelProductModalOpen(true);
+    setIsDelProductModalOpen(true);  // 開啟刪除 Modal
   };
+  
   // 分頁--------------------------------------------------------------------
   const [pageInfo, setPageInfo] = useState({}); // 儲存分頁狀態
   const handlePageChange = (page) => {
@@ -138,11 +138,11 @@ function ProductPage({ setIsAuth }) {
               </tbody>
             </table>
           </div>
-          {/*分頁*/}
+          {/* 分頁 */}
           <Pagination pageInfo={pageInfo} handlePageChange={handlePageChange} />
         </div>
       </div>
-      {/* 產品 Modal */}
+      {/* 【產品 Modal】 */}
       <ProductModal
         modalMode={modalMode}
         tempProduct={tempProduct}
@@ -151,7 +151,7 @@ function ProductPage({ setIsAuth }) {
         getProducts={getProducts}
       />
 
-      {/* 加入刪除產品 Modal */}
+      {/* 【刪除Modal】 */}
       <DeleteProductModal
         tempProduct={tempProduct}
         getProducts={getProducts}
